@@ -1,17 +1,20 @@
-import React from "react";
 import "../styles/FriendCard.scss";
 
 const FriendCard = ({ friend, onClick }) => {
   return (
     <div className="friend-card" onClick={() => onClick(friend)}>
       <img
-        src={friend.picture.medium}
+        src={friend.picture.large}
         alt={`${friend.name.first} ${friend.name.last}`}
+        className="avatar"
       />
-      <div className="friend-info">
-        <h3>{friend.name.first} {friend.name.last}</h3>
-        <p>Email: {friend.email}</p>
-        <p>Phone: {friend.phone}</p>
+
+      <div className="info">
+        <h3>
+          {friend.name.first} {friend.name.last}
+        </h3>
+        <p>{friend.email}</p>
+        <span className="phone">{friend.phone}</span>
       </div>
     </div>
   );

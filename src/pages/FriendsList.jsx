@@ -1,103 +1,111 @@
 import { useEffect, useState } from "react";
 import FriendCard from "../components/FriendCard";
 import FriendModal from "../components/FriendModal";
+import { FaSignOutAlt } from "react-icons/fa";
 import "../styles/FriendsList.scss";
 
-const TOTAL_FRIENDS = 500;
-const RESULTS_PER_PAGE = 25;
-const MAX_PAGE = Math.ceil(TOTAL_FRIENDS / RESULTS_PER_PAGE);
+const FriendsList = ({ onLogout }) => {
+    const [friends, setFriends] = useState([]);
+    const [page, setPage] = useState(1);
+    const [error, setError] = useState("");
+    const [selectedFriend, setSelectedFriend] = useState(null); // modal friend
 
-const FriendsList = () => {
-  const [friends, setFriends] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [page, setPage] = useState(1);
-  const [inputPage, setInputPage] = useState(1);
-  const [error, setError] = useState("");
-  const [selectedFriend, setSelectedFriend] = useState(null); // modal friend
+    const handleCardClick = (friend) => {
+        setSelectedFriend(friend);
+    };
 
-  const fetchFriends = async (pageNumber) => {
-    setLoading(true);
-    setError("");
-    try {
-      const res = await fetch(
-        `https://randomuser.me/api/?seed=lll&page=${pageNumber}&results=${RESULTS_PER_PAGE}`
-      );
-      const data = await res.json();
-      setFriends(data.results);
-    } catch (err) {
-      console.error("Error fetching friends:", err);
-      setError("⚠️ Failed to fetch friends. Try again.");
-    } finally {
-      setLoading(false);
-    }
-  };
+    const closeModal = () => setSelectedFriend(null);
 
-  useEffect(() => {
-    fetchFriends(page);
-    setInputPage(page);
-  }, [page]);
+    const RESULTS = 25;
+    const MAX_PAGES = 20; // 500 friends / 25 per page
 
-  const handleNext = () => setPage((prev) => (prev < MAX_PAGE ? prev + 1 : prev));
-  const handlePrev = () => setPage((prev) => (prev > 1 ? prev - 1 : prev));
+    useEffect(() => {
+        fetch(
+            `https://randomuser.me/api/?seed=lll&page=${page}&results=${RESULTS}`
+        )
+            .then((res) => res.json())
+            .then((data) => {
+                setFriends(data.results);
+                setError("");
+            })
+            .catch(() => setError("Failed to load friends"));
+    }, [page]);
 
-  const handleInputChange = (e) => {
-    const value = e.target.value;
-    if (/^\d*$/.test(value)) {
-      setInputPage(value);
-    }
-  };
+    const handlePageChange = (value) => {
+        const pageNum = Number(value);
 
-  const handleGoToPage = () => {
-    const pageNumber = parseInt(inputPage, 10);
-    if (isNaN(pageNumber)) {
-      setError("❌ Please enter a valid number");
-      return;
-    }
-    if (pageNumber < 1 || pageNumber > MAX_PAGE) {
-      setError(`❌ Page must be between 1 and ${MAX_PAGE}`);
-      return;
-    }
-    setError("");
-    setPage(pageNumber);
-  };
+        if (!pageNum || pageNum < 1 || pageNum > MAX_PAGES) {
+            setError(`Please enter a page between 1 and ${MAX_PAGES}`);
+            return;
+        }
 
-  const handleCardClick = (friend) => {
-    setSelectedFriend(friend);
-  };
+        setError("");
+        setPage(pageNum);
+    };
 
-  const closeModal = () => setSelectedFriend(null);
+    const handleLogout = () => {
+        localStorage.removeItem("isLoggedIn");
+        window.location.reload();
+    };
 
-  if (loading) return <p>Loading friends...</p>;
+    return (
+        <div className="friends-page">
+            {/* Header */}
+            <header className="friends-header">
+                <div>
+                    <h1>Friends</h1>
+                    <p>Discover and manage your connections</p>
+                </div>
 
-  return (
-    <div className="friends-container">
-      <div className="pagination-controls">
-        <button onClick={handlePrev} disabled={page === 1}>
-          ⬅ Previous
-        </button>
+                <FaSignOutAlt
+                    className="logout-icon"
+                    onClick={handleLogout}
+                    title="Logout"
+                />
+            </header>
 
-        <span>Page</span>
-        <input type="text" value={inputPage} onChange={handleInputChange} />
-        <button onClick={handleGoToPage}>Go</button>
+            {/* Pagination */}
+            <div className="pagination-bar">
+                <button
+                    onClick={() => page > 1 && setPage(page - 1)}
+                    disabled={page === 1}
+                >
+                    ⬅ Previous
+                </button>
 
-        <button onClick={handleNext} disabled={page === MAX_PAGE}>
-          Next ➡
-        </button>
-      </div>
+                <div className="page-input">
+                    Page
+                    <input
+                        type="number"
+                        value={page}
+                        onChange={(e) => handlePageChange(e.target.value)}
+                    />
 
-      {error && <p className="error-message">{error}</p>}
+                    of {MAX_PAGES}
+                </div>
 
-      <div className="friends-list">
-        {friends.map((friend, index) => (
-          <FriendCard key={index} friend={friend} onClick={handleCardClick} />
-        ))}
-      </div>
+                <button
+                    onClick={() => page < MAX_PAGES && setPage(page + 1)}
+                    disabled={page === MAX_PAGES}
+                >
+                    Next ➡
+                </button>
+            </div>
 
-      {selectedFriend && (
-        <FriendModal friend={selectedFriend} onClose={closeModal} />
-      )}
-    </div>
-  );
+            {error && <p className="error">{error}</p>}
+
+            {/* Friends Grid */}
+            <div className="friends-grid">
+                {friends.map((friend, index) => (
+                    <FriendCard key={index} friend={friend} onClick={handleCardClick} />
+                ))}
+            </div>
+
+            {selectedFriend && (
+                <FriendModal friend={selectedFriend} onClose={closeModal} />
+            )}
+        </div>
+    );
 };
 
 export default FriendsList;
