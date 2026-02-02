@@ -1,6 +1,52 @@
-.friends-list {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: 16px;
+.friends-container {
+  width: 90%;
+  max-width: 1200px;
+  margin: 0 auto;
   padding: 16px;
+
+  .pagination-controls {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 16px;
+    gap: 8px;
+
+    button {
+      padding: 8px 16px;
+      background: #2563eb;
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background 0.2s;
+
+      &:disabled {
+        background: #a5b4fc;
+        cursor: not-allowed;
+      }
+
+      &:hover:not(:disabled) {
+        background: #1e40af;
+      }
+    }
+
+    span {
+      font-weight: bold;
+      font-size: 1rem;
+    }
+
+    input {
+      width: 50px;
+      padding: 6px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      text-align: center;
+    }
+  }
+
+  .friends-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 16px;
+  }
 }
