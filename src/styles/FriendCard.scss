@@ -1,0 +1,33 @@
+.friend-card {
+  display: flex;
+  align-items: center;
+  padding: 12px;
+  margin: 12px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  background: #fff;
+  transition: transform 0.2s;
+
+  &:hover {
+    transform: scale(1.02);
+  }
+
+  img {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    margin-right: 12px;
+  }
+
+  .friend-info {
+    h3 {
+      margin: 0 0 4px;
+    }
+
+    p {
+      margin: 2px 0;
+      font-size: 0.9rem;
+      color: #555;
+    }
+  }
+}
