@@ -1,7 +1,7 @@
 import { FaTimes, FaEnvelope, FaPhone, FaMapMarkerAlt, FaBirthdayCake } from "react-icons/fa";
 import "../styles/FriendModal.scss";
 
-const FriendModal = ({ friend, onClose }) => {
+const FriendModal = ({ friend, onClose, darkMode }) => {
   if (!friend) return null;
 
   const { name, picture, email, phone, location, dob } = friend;
@@ -20,7 +20,9 @@ const FriendModal = ({ friend, onClose }) => {
           className="modal-avatar"
         />
 
-        <h2>
+        <h2 style={{
+          color: darkMode ? 'white' : ''
+        }}>
           {name.first} {name.last}
         </h2>
 

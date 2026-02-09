@@ -1,5 +1,6 @@
 import Login from "./components/Login";
 import "./main.scss";
+import "./styles/theme.scss";
 
 function App() {
   return (

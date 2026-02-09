@@ -1,6 +1,6 @@
 import "../styles/FriendCard.scss";
 
-const FriendCard = ({ friend, onClick }) => {
+const FriendCard = ({ friend, onClick, darkMode }) => {
   return (
     <div className="friend-card" onClick={() => onClick(friend)}>
       <img
@@ -10,7 +10,9 @@ const FriendCard = ({ friend, onClick }) => {
       />
 
       <div className="info">
-        <h3>
+        <h3 style={{
+          color: darkMode ? 'white' : ''
+        }}>
           {friend.name.first} {friend.name.last}
         </h3>
         <p>{friend.email}</p>

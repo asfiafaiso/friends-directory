@@ -1,8 +1,8 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import CryptoJS from "crypto-js";
 import FriendsList from "../pages/FriendsList";
 import "../styles/Login.scss";
-import { FaUser, FaLock, FaEye, FaEyeSlash, FaMoon, FaSun } from 'react-icons/fa';
+import { FaUser, FaLock, FaEye, FaEyeSlash, FaMoon, FaSun } from "react-icons/fa";
 
 const Login = () => {
   const [username, setUsername] = useState("");
@@ -11,9 +11,18 @@ const Login = () => {
   const [message, setMessage] = useState("");
   const [loggedIn, setLoggedIn] = useState(false);
 
+  // Theme state
+  const [darkMode, setDarkMode] = useState(
+    () => localStorage.getItem("theme") === "dark"
+  );
+
+  useEffect(() => {
+    document.body.className = darkMode ? "dark" : "";
+    localStorage.setItem("theme", darkMode ? "dark" : "light");
+  }, [darkMode]);
+
   const handleLogin = async (e) => {
     e.preventDefault();
-
     try {
       const res = await fetch("https://randomuser.me/api/?seed=lll");
       const data = await res.json();
@@ -26,7 +35,7 @@ const Login = () => {
 
       if (username === apiUsername && hashedInput === hashedApi) {
         setMessage("✅ Login successful! Redirecting...");
-        setTimeout(() => setLoggedIn(true), 800); // small delay for UX
+        setTimeout(() => setLoggedIn(true), 800);
       } else {
         setMessage("❌ Invalid username or password");
       }
@@ -35,12 +44,27 @@ const Login = () => {
     }
   };
 
-  if (loggedIn) return <FriendsList />;
+  if (loggedIn)
+    return <FriendsList darkMode={darkMode} setDarkMode={setDarkMode} />;
 
   return (
-    <div className="login-page">
+    <div className={`login-page ${darkMode ? "dark" : ""}`}>
+      {/* Theme toggle top-right */}
+      <div
+        className="login-theme-toggle"
+        onClick={() => setDarkMode(!darkMode)}
+        title="Toggle Theme"
+      >
+        {darkMode ? <FaSun /> : <FaMoon />}
+      </div>
+
       <div className="login-card">
-        <h2>Welcome Back!</h2>
+        <h2 style={{
+          color: darkMode ? 'white' : ''
+        }}>
+          Welcome Back!
+        </h2>
+
         <p className="subtext">Please login to continue</p>
 
         <form onSubmit={handleLogin}>
@@ -53,13 +77,12 @@ const Login = () => {
               onChange={(e) => setUsername(e.target.value)}
               required
             />
-            {/* <span className="focus-border"></span> */}
           </div>
 
           <div className="input-group">
             <FaLock className="icon" />
             <input
-              type={showPassword ? 'text' : 'password'}
+              type={showPassword ? "text" : "password"}
               placeholder="Password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
@@ -71,7 +94,6 @@ const Login = () => {
             >
               {showPassword ? <FaEyeSlash /> : <FaEye />}
             </span>
-            {/* <span className="focus-border"></span> */}
           </div>
 
           <button type="submit" className="login-btn">
